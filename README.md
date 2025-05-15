@@ -52,5 +52,5 @@ A role-based eCommerce web application built with Django. It includes dashboards
 
 1. **Clone the repository**:
 ```bash
-git clone https://github.com/mahjabeenap/django-ecommerce-project.git
+git clone https://github.com/mahjabeenap/ecommerce-django.git
 cd django-ecommerce-project
