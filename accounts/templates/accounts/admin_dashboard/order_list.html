@@ -1,0 +1,131 @@
+{% extends 'accounts/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">All Orders</h2>
+
+    <!-- Search and Filter Form -->
+    <form method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" name="search" class="form-control" 
+                       placeholder="Search by user, email or product" 
+                       value="{{ search_query }}">
+            </div>
+            <div class="col-md-4">
+                <select name="status" class="form-control">
+                    <option value="">All Statuses</option>
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark btn-block">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Orders Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Seller</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>
+                        {{ order.user.username }}<br>
+                        <small>{{ order.user.email }}</small>
+                    </td>
+                    <td>{{ order.product.name }}</td>
+                    <td>{{ order.product.created_by.username }}</td>
+                    <td>₹{{ order.product.price }}</td>
+                    <td>
+                        <span class="badge rounded-pill 
+                            {% if order.status == 'completed' %}bg-success
+                            {% elif order.status == 'cancelled' %}bg-danger
+                            {% elif order.status == 'shipped' %}bg-info
+                            {% else %}bg-warning{% endif %} text-white">
+                            {{ order.get_status_display }}
+                    </span>
+                    </td>
+                    <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
+                    
+                </tr>
+                
+                <!-- Order Detail Modal -->
+                <div class="modal fade" id="orderModal{{ order.id }}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Order #{{ order.id }}</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <h6>Customer Details</h6>
+                                        <p>
+                                            <strong>Name:</strong> {{ order.user.username }}<br>
+                                            <strong>Email:</strong> {{ order.user.email }}<br>
+                                            <strong>Phone:</strong> {{ order.user.phone_number|default:"-" }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Product Details</h6>
+                                        <p>
+                                            <strong>Name:</strong> {{ order.product.name }}<br>
+                                            <strong>Price:</strong> ₹{{ order.product.price }}<br>
+                                            <strong>Seller:</strong> {{ order.product.created_by.username }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6>Order Status History</h6>
+                                        <ul class="list-group">
+                                            <li class="list-group-item">
+                                                <strong>Created:</strong> {{ order.created_at|date:"M d, Y H:i" }}
+                                            </li>
+                                            {% if order.cancelled_at %}
+                                            <li class="list-group-item">
+                                                <strong>Cancelled:</strong> {{ order.cancelled_at|date:"M d, Y H:i" }}
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">No orders found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

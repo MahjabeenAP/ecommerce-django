@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome back to E-Com! | Sign in to continue</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Welcome back to E-Com!</h1>
+            <p>Sign in to continue</p>
+        </div>
+        
+        <form method="POST" class="login-form">
+            {% csrf_token %}
+            
+            {% for message in messages %}
+                <p class="error-message">{{ message }}</p>
+            {% endfor %}
+
+            <div class="form-group">
+               <label for="email">Your Email</label>
+               <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            
+            <div class="form-options">
+                
+                <a href="{% url 'password_reset' %}" class="forgot-password">Forgot Password?</a>
+            </div>
+            
+            <button type="submit" class="login-button">Login</button>
+            
+            <div class="divider">
+                <span>OR</span>
+            </div>
+        
+            <p class="register-link">Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+        </form>
+    </div>
+</body>
+</html>

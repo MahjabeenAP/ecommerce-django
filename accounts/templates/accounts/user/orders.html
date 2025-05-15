@@ -1,0 +1,66 @@
+{% extends 'accounts/user_base.html' %}
+{% load static %}
+{% load tz %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Your Orders</h2>
+    {% if orders %}
+        <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Seller</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.product.name }}</td>
+            <td>${{ order.product.price }}</td>
+            <td>{{ order.product.created_by.username }}</td>
+            <td>{{ order.created_at|date:"M d, Y" }}</td>
+            <td>
+                <span class="badge 
+                    {% if order.status == 'completed' %}bg-success
+                    {% elif order.status == 'cancelled' %}bg-danger
+                    {% else %}bg-warning{% endif %}">
+                    {{ order.status|title }}
+                </span>
+            </td>
+           <td>
+    {% if order.user == request.user and order.status == 'pending' %}
+        <a href="{% url 'cancel_order' order.id %}" 
+           class="btn btn-sm btn-danger"
+           onclick="return confirm('Are you sure you want to cancel this order?')">
+            Cancel
+        </a>
+    {% endif %}
+    
+    {% if order.product.created_by == request.user %}
+        <div class="btn-group">
+            {% if order.status == 'pending' %}
+                <a href="{% url 'mark_shipped' order.id %}" class="btn btn-sm btn-success">Mark as Shipped</a>
+            {% endif %}
+            <a href="#" class="btn btn-sm btn-warning">Report</a>
+        </div>
+    {% endif %}
+</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" class="text-center">No orders found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    {% else %}
+        <p>You haven't placed any orders yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

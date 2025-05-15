@@ -1,0 +1,120 @@
+{% extends 'accounts/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<body class="bg-light">
+
+<div class="container mt-5">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Search Form -->
+<form method="get" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" 
+               placeholder="Search by username or email" 
+               value="{{ search_query }}">
+        <button type="submit" class="btn btn-outline-dark">Search</button>
+        {% if search_query %}
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Clear</a>
+        {% endif %}
+    </div>
+</form>
+
+    <div class="mb-4">
+        <h4>Pending Sales Accounts</h4>
+        <table class="table table-bordered table-sm">
+            <thead class="thead-light">
+                <tr><th>Username</th><th>Email</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for user in pending_sales %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <a href="{% url 'verify_sales_account' user.id %}" class="btn btn-success btn-sm">Verify</a>
+                        <a href="{% url 'deactivate_user' user.id %}" class="btn btn-warning btn-sm">Deactivate</a>
+                        <a href="{% url 'delete_user' user.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3">No pending sales accounts.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mb-4">
+        <h4>Verified Sales Accounts</h4>
+        <table class="table table-bordered table-sm">
+            <thead class="thead-light">
+                <tr><th>Username</th><th>Email</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                {% for user in verified_sales %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{% if user.is_active %}Active{% else %}Inactive{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    
+
+    <div class="mb-4">
+        <h4>Registered Users</h4>
+        <table class="table table-bordered table-sm">
+            <thead class="thead-light">
+                <tr><th>Username</th><th>Email</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{% if user.is_active %}Active{% else %}Inactive{% endif %}</td>
+                    <td>
+                        <a href="{% url 'deactivate_user' user.id %}" class="btn btn-warning btn-sm">Deactivate</a>
+                        <a href="{% url 'delete_user' user.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+<div class="row justify-content-center mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm border-dark h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title text-dark">Sales User Products</h5>
+                <p class="card-text">View all products added by sales users.</p>
+                <a href="{% url 'sales_products_list' %}" class="btn btn-outline-dark">View Products</a>
+            </div>
+        </div>
+    </div>
+  <div class="col-md-4 mb-3">
+    <div class="card shadow-sm border-dark h-100">
+        <div class="card-body text-center">
+            <h5 class="card-title text-dark">User Orders</h5>
+            <p class="card-text">View all orders placed by users</p>
+            <a href="{% url 'admin_order_list' %}" class="btn btn-outline-dark">View Orders</a>
+        </div>
+    </div>
+</div>
+
+   
+</div>
+
+</body>
+
+{% endblock %}

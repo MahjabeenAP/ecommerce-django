@@ -1,0 +1,33 @@
+{% extends 'accounts/user_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Your Addresses</h2>
+     {% if not addresses %}
+        <a href="{% url 'address_add' %}" class="btn btn-primary mb-3">Add New Address</a>
+    {% endif %}
+    
+    {% if addresses %}
+        <div class="row">
+            {% for address in addresses %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Address #{{ forloop.counter }}</h5>
+                        <p class="card-text">
+                            {{ address.address_line }}<br>
+                            {{ address.city }}<br>
+                            Postal Code: {{ address.postal_code }}
+                        </p>
+                        <a href="{% url 'address_edit' address.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You haven't added any addresses yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

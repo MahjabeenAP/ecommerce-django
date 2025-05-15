@@ -1,0 +1,42 @@
+{% extends 'accounts/user_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Welcome, {{ request.user.username }}</h2>
+    <p>Browse Products:</p>
+
+    <div class="row">
+        {% for product in products %}
+<div class="col-md-4 mb-4">
+    <div class="card h-100">
+        {% if product.image %}
+        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+            <p class="card-text"><strong>${{ product.price }}</strong></p>
+            <p class="text-muted small">
+                Posted by: {{ product.created_by.username }}
+            </p>
+            <div class="d-flex justify-content-between">
+                {% if product.id in active_order_ids %}
+                <button class="btn btn-success" disabled>Ordered</button>
+            {% else %}
+                <a href="{% url 'order_product' product.id %}" class="btn btn-primary">Order</a>
+            {% endif %}
+                
+                {% if product.id in wishlist_products %}
+                    <button class="btn btn-warning btn-sm" disabled>In Wishlist</button>
+                {% else %}
+                    <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-warning btn-sm">Wishlist</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+    </div>
+</div>
+{% endblock %}

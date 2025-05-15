@@ -1,0 +1,131 @@
+{% extends 'accounts/sales_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Sales Dashboard</h2>
+    
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Add New Product</h5>
+            {% if request.user.is_verified %}
+                <a href="{% url 'sales_product_add' %}" class="btn btn-success">Add Product</a>
+            {% else %}
+                <p class="text-danger">You need to be verified by admin to add products.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Your Products</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Active</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td><img src="{{ product.image.url }}" width="50" height="50" /></td>
+                        <td>{{ product.name }}</td>
+                        <td>₹{{ product.price }}</td>
+                        <td>{{ product.is_active|yesno:"Active,Inactive" }}</td>
+                        <td>
+                            <a href="{% url 'sales_product_edit' product.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                            <a href="{% url 'sales_product_delete' product.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No products found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Order Management</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Product</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>
+                                <img src="{{ order.product.image.url }}" width="50" class="mr-2">
+                                {{ order.product.name }}
+                            </td>
+                            <td>{{ order.user.username }}</td>
+                            <td>{{ order.user.phone_number|default:"-" }}</td>
+                            <td>
+                                {% with address=order.user.address_set.first %}
+                                    {% if address %}
+                                        {{ address.address_line }}, {{ address.city }}, {{ address.postal_code }}
+                                    {% else %}
+                                        No address
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>{{ order.created_at|date:"d M Y" }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if order.status == 'completed' %}bg-success
+                                    {% elif order.status == 'cancelled' %}bg-danger
+                                    {% elif order.status == 'shipped' %}bg-info
+                                    {% else %}bg-warning{% endif %}">
+                                    {{ order.status|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    {% if order.status == 'pending' %}
+                                        <form method="POST" action="{% url 'update_order_status' order.id 'shipped' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-success">Mark as Shipped</button>
+                                        </form>
+                                        <form method="POST" action="{% url 'update_order_status' order.id 'cancelled' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                        </form>
+                                    {% elif order.status == 'shipped' %}
+                                        <form method="POST" action="{% url 'update_order_status' order.id 'completed' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-primary">Complete</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">No orders found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

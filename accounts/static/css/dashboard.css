@@ -1,0 +1,52 @@
+body {
+    background: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .account-card {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background-color: #fff;
+  }
+  
+  .title {
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.4rem;
+  }
+  
+  .username {
+    text-align: center;
+    color: gray;
+    margin-bottom: 20px;
+  }
+  
+  .account-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .account-item i {
+    margin-right: 10px;
+    color: #2c3e50;
+  }
+  
+  .section-link {
+    color: #2c3e50;
+    padding: 10px 0;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .logout {
+    color: red;
+  }
+  

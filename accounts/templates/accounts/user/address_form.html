@@ -1,0 +1,17 @@
+{% extends 'accounts/user_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>{% if address %}Update Address{% else %}Add New Address{% endif %}</h2>
+    
+   
+    
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save Address</button>
+        <a href="{% url 'address_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
