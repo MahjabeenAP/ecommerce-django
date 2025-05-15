@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
-#from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import  authenticate, login , logout
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -462,6 +461,71 @@ def deactivate_user(request, user_id):
     return redirect('admin_dashboard')
 
 
+@login_required
+@user_passes_test(is_admin)
+def verify_sales_account(request, user_id):
+    user = CustomUser.objects.get(id=user_id)
+    if user.role == 'sales':
+        user.is_verified = True
+        user.save()
+        messages.success(request, f"Sales account '{user.username}' has been verified.")
+    return redirect('admin_dashboard')
+
+# product list shown admin
+def sales_products_list(request):
+    if request.user.is_superuser or request.user.role == 'admin':
+        sales_users = CustomUser.objects.filter(role='sales')
+        products = Product.objects.filter(created_by__in=sales_users)
+        return render(request, 'accounts/admin_dashboard/sales_products.html', {'products': products})
+    else:
+        return redirect('login')
+
+@user_passes_test(is_admin)
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    product.delete()
+    messages.success(request, 'Product deleted successfully.')
+    return redirect('sales_products_list')
+
+@user_passes_test(is_admin)
+def toggle_product_status(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    product.is_active = not product.is_active
+    product.save()
+    messages.success(request, f'Product {"activated" if product.is_active else "deactivated"} successfully.')
+    return redirect('sales_products_list')
+
+@login_required
+@user_passes_test(is_admin)
+def admin_order_list(request):
+    search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', '')
+    
+    orders = Order.objects.all().select_related(
+        'user', 'product', 'product__created_by'
+    ).order_by('-created_at')
+    
+    # Apply filters if provided
+    if search_query:
+        orders = orders.filter(
+            Q(user__username__icontains=search_query) |
+            Q(user__email__icontains=search_query) |
+            Q(product__name__icontains=search_query)
+        )
+    
+    if status_filter:
+        orders = orders.filter(status=status_filter)
+    
+    context = {
+        'orders': orders,
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'status_choices': Order.STATUS_CHOICES,
+    }
+    
+    return render(request, 'accounts/admin_dashboard/order_list.html', context)
+
+
 #        REGISTRATION WITH EMAIL
 
 
@@ -574,77 +638,5 @@ def custom_login(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
-
-@login_required
-@user_passes_test(is_admin)
-def verify_sales_account(request, user_id):
-    user = CustomUser.objects.get(id=user_id)
-    if user.role == 'sales':
-        user.is_verified = True
-        user.save()
-        messages.success(request, f"Sales account '{user.username}' has been verified.")
-    return redirect('admin_dashboard')
-
-# product list shown admin
-def sales_products_list(request):
-    if request.user.is_superuser or request.user.role == 'admin':
-        sales_users = CustomUser.objects.filter(role='sales')
-        products = Product.objects.filter(created_by__in=sales_users)
-        return render(request, 'accounts/admin_dashboard/sales_products.html', {'products': products})
-    else:
-        return redirect('login')
-
-
-
-
-@user_passes_test(is_admin)
-def delete_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    product.delete()
-    messages.success(request, 'Product deleted successfully.')
-    return redirect('sales_products_list')
-
-@user_passes_test(is_admin)
-def toggle_product_status(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    product.is_active = not product.is_active
-    product.save()
-    messages.success(request, f'Product {"activated" if product.is_active else "deactivated"} successfully.')
-    return redirect('sales_products_list')
-
-@login_required
-@user_passes_test(is_admin)
-def admin_order_list(request):
-    search_query = request.GET.get('search', '')
-    status_filter = request.GET.get('status', '')
-    
-    orders = Order.objects.all().select_related(
-        'user', 'product', 'product__created_by'
-    ).order_by('-created_at')
-    
-    # Apply filters if provided
-    if search_query:
-        orders = orders.filter(
-            Q(user__username__icontains=search_query) |
-            Q(user__email__icontains=search_query) |
-            Q(product__name__icontains=search_query)
-        )
-    
-    if status_filter:
-        orders = orders.filter(status=status_filter)
-    
-    context = {
-        'orders': orders,
-        'search_query': search_query,
-        'status_filter': status_filter,
-        'status_choices': Order.STATUS_CHOICES,
-    }
-    
-    return render(request, 'accounts/admin_dashboard/order_list.html', context)
-
-
-
-
-
 
 

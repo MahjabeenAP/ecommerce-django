@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from accounts.views import CustomPasswordChangeView,user_profile_view,user_profile_update
 
 from accounts import views
@@ -86,5 +86,7 @@ urlpatterns = [
     path('user/addresses/', views.address_list, name='address_list'),
     path('user/address/add/', views.address_add, name='address_add'),
     path('user/address/edit/<int:pk>/', views.address_edit, name='address_edit'),
+
+    path('api/', include('accounts.api_urls')), 
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

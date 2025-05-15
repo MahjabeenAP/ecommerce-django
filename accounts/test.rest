@@ -1,0 +1,198 @@
+### Register a new user
+POST http://127.0.0.1:8000/api/register/
+Content-Type: application/json
+
+{
+  "username" : "newuser",
+  "email": "newuser@example.com",
+  "password": "newpassword123",
+  "role": "user"
+}
+
+### Register a new sale
+POST http://127.0.0.1:8000/api/register/
+Content-Type: application/json
+
+{
+  "username" : "newsales",
+  "email": "sales@example.com",
+  "password": "sales123",
+  "role": "sales"
+}
+
+### Register a new admin
+POST http://127.0.0.1:8000/api/register/
+Content-Type: application/json
+
+{
+  "username" : "newadmin",
+  "email": "admin@example.com",
+  "password": "admin123",
+  "role": "admin"
+}
+
+### login user
+
+POST http://127.0.0.1:8000/api/login/
+Content-Type: application/json
+
+{
+  
+  "email": "newuser@example.com",
+  "password": "newsecurepassword456!"
+}
+
+###  list all products for user
+GET http://127.0.0.1:8000/api/products/
+Authorization: Token 18c14981175f4b1119c2ae861e21367bfb86932b
+
+### login sales
+
+POST http://127.0.0.1:8000/api/login/
+Content-Type: application/json
+
+{
+  
+  "email": "sales@example.com",
+  "password": "sales123"
+}
+
+### add product in sales
+
+POST http://127.0.0.1:8000/api/products/
+Authorization: Token ebc89e14132ec8fe8a73f842241f0cff0c362074
+Content-Type: application/json
+
+{
+    "name": "New Product",
+    "description": "A great new product",
+    "price": 99.99,
+    "stock": 100,
+    "is_active": true
+}
+
+### Get product details
+GET http://localhost:8000/api/products/5/
+Authorization: Token ebc89e14132ec8fe8a73f842241f0cff0c362074
+
+### add wishlist user
+POST http://localhost:8000/api/wishlist/add/
+Authorization: Token 18c14981175f4b1119c2ae861e21367bfb86932b
+Content-Type: application/json
+
+{
+    "product_id": 1
+}
+
+### view wishlist user
+GET http://localhost:8000/api/wishlist/
+Authorization: Token 18c14981175f4b1119c2ae861e21367bfb86932b
+
+### remove wishlist user
+DELETE http://localhost:8000/api/wishlist/remove/6/
+Authorization: Token 18c14981175f4b1119c2ae861e21367bfb86932b
+
+### place an order user
+POST http://localhost:8000/api/orders/place/5/
+Authorization: Token 18c14981175f4b1119c2ae861e21367bfb86932b
+
+### view orders user
+GET http://localhost:8000/api/orders/
+Authorization: Token 18c14981175f4b1119c2ae861e21367bfb86932b
+
+### cancel an order 
+POST http://localhost:8000/api/orders/cancel/6/
+Authorization: Token 18c14981175f4b1119c2ae861e21367bfb86932b
+
+### add address
+PuT http://localhost:8000/api/address/edit/1
+Authorization: Token 18c14981175f4b1119c2ae861e21367bfb86932b
+Content-Type: application/json
+
+{
+    "address_line": "123 Main St",
+    "city": "Anytown",
+    "postel_code": "12345",
+}
+
+### view address
+GET http://localhost:8000/api/address/
+Authorization: Token 6deb2441232f9983abb4dcf11270f57e7f9ebac5
+
+###  Test successful PUT (full update)
+PUT http://localhost:8000/api/address/edit/2/
+Authorization: Token 6deb2441232f9983abb4dcf11270f57e7f9ebac5
+Content-Type: application/json
+
+{
+  "address_line": "456 Updated St",
+  "city": "Updated City",
+  "postal_code": "54321"
+}
+###  Test successful PATCH (partial update)
+PATCH http://localhost:8000/api/address/edit/2/
+Authorization: Token 6deb2441232f9983abb4dcf11270f57e7f9ebac5
+Content-Type: application/json
+
+{
+  "city": "New Testville"
+}
+
+###
+POST http://127.0.0.1:8000/api/products/
+Authorization: Token ebc89e14132ec8fe8a73f842241f0cff0c362074
+Content-Type: application/json
+
+{
+    "name": "Test Product",
+    "price": 10.99
+}
+
+###  oder view sales
+GET http://127.0.0.1:8000/api/orders/
+Authorization: Token ebc89e14132ec8fe8a73f842241f0cff0c362074
+
+### Sales marks order as shipped
+POST http://127.0.0.1:8000/api/orders/mark-shipped/8/
+Authorization: Token ebc89e14132ec8fe8a73f842241f0cff0c362074
+Content-Type: application/json
+
+### Get current user's profile
+GET http://127.0.0.1:8000/api/profile/
+Authorization: Token ebc89e14132ec8fe8a73f842241f0cff0c362074
+
+### Update all profile fields (PUT)
+PUT http://127.0.0.1:8000/api/profile/
+Authorization: Token ebc89e14132ec8fe8a73f842241f0cff0c362074
+Content-Type: application/json
+
+{
+    "username": "updatedsales",
+    "email": "updated@example.com",
+    "phone_number": 1234567890
+    
+}
+
+###fogot password
+POST http://127.0.0.1:8000/api/forgot-password/
+Content-Type: application/json
+
+{
+    "email": "user@example.com"
+}
+
+### change password 
+POST http://127.0.0.1:8000/api/change-password/
+Authorization: Token 18c14981175f4b1119c2ae861e21367bfb86932b
+Content-Type: application/json
+
+{
+    "current_password": "newpassword123",
+    "new_password": "newsecurepassword456!",
+    "confirm_password": "newsecurepassword456!"
+}
+
+### logout
+POST http://127.0.0.1:8000/api/logout/
+Content-Type: application/json
+Authorization: Token 18c14981175f4b1119c2ae861e21367bfb86932b
